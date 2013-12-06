@@ -1,19 +1,20 @@
-import csv,siteinfo
+import csv
 from operator import attrgetter
-from utilities import Parser
+#from utilities import Parser
+
 
 class SiteDetailOutput(object):
-    
+
     def __init__(self,sitelist):
         self._listofsites = []
         self._listofsites = sitelist
-        
+
     @property
     def ListOfSites(self):
         if self._listofsites is None or len(self._listofsites) == 0:
             return None
         return self._listofsites
-    
+
     def createOutputInfo(self,parser):
         self.PrintToScreen()
         if parser.hasTextOutFile():
@@ -22,7 +23,7 @@ class SiteDetailOutput(object):
             self.PrintToHTMLFile(parser.HTMLOutFile)
         if parser.hasCSVOutSet():
             self.PrintToCSVFile(parser.CSVOutFile)
-        
+
     def PrintToScreen(self):
             sites = sorted(self.ListOfSites, key=attrgetter('Target'))
             target = ""
@@ -51,7 +52,7 @@ class SiteDetailOutput(object):
                         siteimpprop = site.getImportantProperty(0)
                         if target != site.Target:
                             print "\n____________________     Results found for: " + site.Target + "     ____________________"
-                            target = site.Target                        
+                            target = site.Target
                         if siteimpprop is None or len(siteimpprop)==0:
                             print "No results found in the " + site.FriendlyName
                         else:
@@ -69,7 +70,7 @@ class SiteDetailOutput(object):
         sites = sorted(self.ListOfSites, key=attrgetter('Target'))
         target = ""
         print "\n[+] Generating text output: " + textoutfile
-        f = open(textoutfile, "w")        
+        f = open(textoutfile, "w")
         if sites is not None:
             for site in sites:
                 if not isinstance(site._regex,basestring): #this is a multisite
@@ -95,7 +96,7 @@ class SiteDetailOutput(object):
                     siteimpprop = site.getImportantProperty(0)
                     if target != site.Target:
                         f.write("\n____________________     Results found for: " + site.Target + "     ____________________")
-                        target = site.Target                    
+                        target = site.Target
                     if siteimpprop is None or len(siteimpprop)==0:
                         f.write("\nNo results found in the " + site.FriendlyName)
                     else:
@@ -105,11 +106,10 @@ class SiteDetailOutput(object):
                         else:
                             for siteresult in siteimpprop:
                                 f.write("\n" + site.ReportStringForResult + " " + str(siteresult))
-        f.flush()        
+        f.flush()
         f.close()
         print "" + textoutfile + " Generated"
-    
-    
+
     def PrintToCSVFile(self,csvoutfile):
         sites = sorted(self.ListOfSites, key=attrgetter('Target'))
         target = ""
@@ -126,15 +126,15 @@ class SiteDetailOutput(object):
                             tgt = site.Target
                             typ = site.TargetType
                             source = site.FriendlyName[index]
-                            res = "No results found"                    
+                            res = "No results found"
                             csvRW.writerow([tgt,typ,source,res])
                         else:
                             if siteimpprop[index] is None or len(siteimpprop[index])==0:
                                 tgt = site.Target
                                 typ = site.TargetType
                                 source = site.FriendlyName[index]
-                                res = "No results found"                    
-                                csvRW.writerow([tgt,typ,source,res])                                
+                                res = "No results found"
+                                csvRW.writerow([tgt,typ,source,res])
                             else:
                                 #if it's just a string we don't want it to output like a list
                                 if isinstance(siteimpprop, basestring):
@@ -142,7 +142,7 @@ class SiteDetailOutput(object):
                                     typ = site.TargetType
                                     source = site.FriendlyName
                                     res = siteimpprop
-                                    csvRW.writerow([tgt,typ,source,res])  
+                                    csvRW.writerow([tgt,typ,source,res])
                                 #must be a list since it failed the isinstance check on string
                                 else:
                                     for siteresult in siteimpprop[index]:
@@ -150,14 +150,14 @@ class SiteDetailOutput(object):
                                         typ = site.TargetType
                                         source = site.FriendlyName[index]
                                         res = siteresult
-                                        csvRW.writerow([tgt,typ,source,res])                                 
+                                        csvRW.writerow([tgt,typ,source,res])
                 else:#this is a singlesite
                     siteimpprop = site.getImportantProperty(0)
                     if siteimpprop is None or len(siteimpprop)==0:
                         tgt = site.Target
                         typ = site.TargetType
                         source = site.FriendlyName
-                        res = "No results found"                    
+                        res = "No results found"
                         csvRW.writerow([tgt,typ,source,res])
                     else:
                         #if it's just a string we don't want it output like a list
@@ -166,24 +166,24 @@ class SiteDetailOutput(object):
                             typ = site.TargetType
                             source = site.FriendlyName
                             res = siteimpprop
-                            csvRW.writerow([tgt,typ,source,res])                    
+                            csvRW.writerow([tgt,typ,source,res])
                         else:
                             for siteresult in siteimpprop:
                                 tgt = site.Target
                                 typ = site.TargetType
                                 source = site.FriendlyName
                                 res = siteresult
-                                csvRW.writerow([tgt,typ,source,res])        
-        f.flush()        
+                                csvRW.writerow([tgt,typ,source,res])
+        f.flush()
         f.close()
         print "" + csvoutfile + " Generated"
-        
+
     def PrintToHTMLFile(self,htmloutfile):
         sites = sorted(self.ListOfSites, key=attrgetter('Target'))
         target = ""
         print '\n[+] Generating HTML output: ' + htmloutfile
         f = open(htmloutfile, "w")
-        f.write(self.getHTMLOpening())      
+        f.write(self.getHTMLOpening())
         if sites is not None:
             for site in sites:
                 if not isinstance(site._regex,basestring): #this is a multisite:
@@ -195,7 +195,7 @@ class SiteDetailOutput(object):
                             source = site.FriendlyName[index]
                             res = "No results found"
                             tableData = '<tr><td>' + tgt + '</td><td>' + typ + '</td><td>' + source + '</td><td>' + str(res) + '</td></tr>'
-                            f.write(tableData)                   
+                            f.write(tableData)
                         else:
                             if siteimpprop[index] is None or len(siteimpprop[index])==0:
                                 tgt = site.Target
@@ -203,7 +203,7 @@ class SiteDetailOutput(object):
                                 source = site.FriendlyName[index]
                                 res = "No results found"
                                 tableData = '<tr><td>' + tgt + '</td><td>' + typ + '</td><td>' + source + '</td><td>' + str(res) + '</td></tr>'
-                                f.write(tableData)                                
+                                f.write(tableData)
                             else:
                                 #if it's just a string we don't want it to output like a list
                                 if isinstance(siteimpprop, basestring):
@@ -212,7 +212,7 @@ class SiteDetailOutput(object):
                                     source = site.FriendlyName
                                     res = siteimpprop
                                     tableData = '<tr><td>' + tgt + '</td><td>' + typ + '</td><td>' + source + '</td><td>' + str(res) + '</td></tr>'
-                                    f.write(tableData)  
+                                    f.write(tableData)
                                 else:
                                     for siteresult in siteimpprop[index]:
                                         tgt = site.Target
@@ -227,7 +227,7 @@ class SiteDetailOutput(object):
                         tgt = site.Target
                         typ = site.TargetType
                         source = site.FriendlyName
-                        res = "No results found"                    
+                        res = "No results found"
                         tableData = '<tr><td>' + tgt + '</td><td>' + typ + '</td><td>' + source + '</td><td>' + str(res) + '</td></tr>'
                         f.write(tableData)
                     else:
@@ -248,10 +248,10 @@ class SiteDetailOutput(object):
                                 tableData = '<tr><td>' + tgt + '</td><td>' + typ + '</td><td>' + source + '</td><td>' + str(res) + '</td></tr>'
                                 f.write(tableData)
         f.write(self.getHTMLClosing())
-        f.flush()        
+        f.flush()
         f.close()
-        print "" + htmloutfile + " Generated"    
-        
+        print "" + htmloutfile + " Generated"
+
     def getHTMLOpening(self):
             return '''<style type="text/css">
                             #table-3 {
@@ -323,9 +323,9 @@ class SiteDetailOutput(object):
                             <th>Result</th>
                             </tr>
                             '''
-        
+
     def getHTMLClosing(self):
-            return '''    
+            return '''
                 </table>
                 <br>
                 <br>
